@@ -7,7 +7,7 @@ link_prev: /en/values.html
 link_next: /en/streams.html
 ---
 
-Commands are the building blocks for pipelines in Nu. They do the action of the pipeline, whether creating data, changing data as it flows from inputs to outputs, or viewing data once it as exited the pipeline. There are two types of commands: internal commands, those commands built to run inside of Nu, and external commands, commands that are outside of Nu and communicate with standard Unix-style `stdin`/`stdout`.
+Commands are the building blocks for pipelines in Nu. They do the action of the pipeline, whether creating data, changing data as it flows from inputs to outputs, or viewing data once it has exited the pipeline. There are two types of commands: internal commands, those commands built to run inside of Nu, and external commands, commands that are outside of Nu and communicate with standard Unix-style `stdin`/`stdout`.
 
 ## Internal commands
 
@@ -18,16 +18,16 @@ All commands inside of Nu, including plugins, are internal commands. Internal co
 Commands use a light typechecking pass to ensure that arguments passed to them can be handled correctly. To enable this, each command provides a Signature which tells Nu:
 
 * The name of the command
-* The positional arguments (eg, in `start x y` the `x` and `y` are positional arguments)
-* If the command takes an unbounded number of additional positional arguments (eg, `start a1 a2 a3 ... a99 a100`)
-* The named arguments (eg, `start --now`)
+* The positional arguments (e.g. in `start x y` the `x` and `y` are positional arguments)
+* If the command takes an unbounded number of additional positional arguments (e.g. `start a1 a2 a3 ... a99 a100`)
+* The named arguments (e.g. `start --now`)
 * If the command is a filter or a sink
 
 With this information, a pipeline can be checked for potential problems before it's executed.
 
 ## External commands
 
-An external command is any command that is not part of the Nu built-in commands or plugins. If a command is called that Nu does not know about, it will call out to the underlying environment with the provide arguments in an attempt to invoke this command as an external program.
+An external command is any command that is not part of the Nu built-in commands or plugins. If a command is called that Nu does not know about, it will call out to the underlying environment with the provided arguments in an attempt to invoke this command as an external program.
 
 ## Communicating between internal and external commands
 
@@ -37,7 +37,7 @@ Internal commands communicate with each other using the complete value stream th
 
 ### Internal to external
 
-Internal commands that send text to external commands need to have prepared text strings ahead of time. If an object is sent directly to an external command, that is considered an error as there is no way to infer what way the structured data should be represented for the external command.  The user is expected to either narrow down to a simple data cell or to use one of the file type converters (like `to-json`) to convert the table into a string representation.
+Internal commands that send text to external commands need to have prepared text strings ahead of time. If an object is sent directly to an external command, that is considered an error as there is no way to infer how the structured data should be represented for the external command. The user is expected to either narrow down to a simple data cell or to use one of the file type converters (like `to-json`) to convert the table into a string representation.
 
 The external command is opened so that its `stdin` is redirected, so that the data can be sent to it.
 

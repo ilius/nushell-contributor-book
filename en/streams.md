@@ -19,7 +19,7 @@ Let's look at the InputStream type a little closer:
 BoxStream<'static, Tagged<Value>>
 ```
 
-That is, it's an async stream who will send `Tagged<Value>` into the command. For more information about tagging, see the chapter on [metadata](metadata.md).
+That is, it's an async stream which will send `Tagged<Value>` into the command. For more information about tagging, see the chapter on [metadata](metadata.md).
 
 ## OutputStream
 
@@ -44,7 +44,7 @@ pub enum ReturnSuccess {
 }
 ```
 
-Why is OutputStream different from InputStream?  This comes down to a few differences in needs of the two ends of the stream.  By the time data has gotten to the command, it's already been checked for any errors, so it's expected to be a pure data stream.
+Why is OutputStream different from InputStream? This comes down to a few differences in needs of the two ends of the stream. By the time data has gotten to the command, it's already been checked for any errors, so it's expected to be a pure data stream.
 
 Output streams, on the other hand, have to be able to return two other types of data in addition to values: errors and actions.
 
@@ -54,8 +54,4 @@ Errors that are passed down the stream will be detected as values are copied fro
 
 ### Actions
 
-An action differs from a value in that where a value is a bit of data that the next command in the pipeline will see, an action is something intended only for the core Nu runtime.  Actions will change the state of the shell itself by, for example, changing the current path, changing the current shell, updating internal side tables, and so on.
-
-
-
-
+An action differs from a value in that where a value is a bit of data that the next command in the pipeline will see, an action is something intended only for the core Nu runtime. Actions will change the state of the shell itself by, for example, changing the current path, changing the current shell, updating internal side tables, and so on.

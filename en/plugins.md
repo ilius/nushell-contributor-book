@@ -11,9 +11,9 @@ link_next: /en/shells.html
 
 Plugins use JSON-RPC over stdin/stdout (much in the same way VSCode plugins do). The protocol is split into two stages.
 
-The first stage of the protocol deals with the initial discovery of the plugin. A plugin is started up and then asked to reply with its configuration. Much the same was as commands, plugins have a signature that they respond to Nu with.  Once Nu has this signature, it knows how to later invoke the plugin to do work.
+The first stage of the protocol deals with the initial discovery of the plugin. A plugin is started up and then asked to reply with its configuration. Much the same was as commands, plugins have a signature that they respond to Nu with. Once Nu has this signature, it knows how to later invoke the plugin to do work.
 
-The second stage is the actual doing of work.  Here the plugins are sent either a stream of data where they act over the stream element-wise as a filter, or they take all the elements at once in a final processing step as a sink.
+The second stage is the actual doing of work. Here the plugins are sent either a stream of data where they act over the stream element-wise as a filter, or they take all the elements at once in a final processing step as a sink.
 
 ## Discovery
 
@@ -26,7 +26,7 @@ Config replies with the signature of the plugin, which is identical to the signa
 
 Nu continues in this way until it has traveled across all directories in the path.
 
-After it has traversed the path, it will look in two more directories: the target/debug and the target/release directories. It will pick one or the other depending whether Nu was compiled in debug mode or release mode, respectively.  This allows for easier testing of plugins during development.
+After it has traversed the path, it will look in two more directories: the target/debug and the target/release directories. It will pick one or the other depending whether Nu was compiled in debug mode or release mode, respectively. This allows for easier testing of plugins during development.
 
 ## Creating a plugin (in Rust)
 
@@ -41,7 +41,7 @@ First off, we'll create our plugin:
 > cd nu_plugin_len
 ```
 
-Next, we'll add `nu` to the list of dependencies to the Cargo.toml directory.  At the bottom of the new Cargo.toml file, add this new dependency on the `nu` crate:
+Next, we'll add `nu` to the list of dependencies to the Cargo.toml directory. At the bottom of the new Cargo.toml file, add this new dependency on the `nu` crate:
 
 ```
 [dependencies]
@@ -74,7 +74,7 @@ impl Len {
                 tag: value.tag,
             }),
             _ => Err(ShellError::labeled_error(
-                "Unrecorgnized type in stream",
+                "Unrecognized type in stream",
                 "'len' given non-string info by this",
                 value.tag.span,
             )),
@@ -111,9 +111,9 @@ fn main() {
 }
 ```
 
-In main, we just call a single function `serve_plugin`. This will do the work of calling into out plugin, handling the JSON serialization/deserialization, and sending values and errors back to Nu for us.  To start it up, we pass it something that implements the `Plugin` trait.
+In main, we just call a single function `serve_plugin`. This will do the work of calling into our plugin, handling the JSON serialization/deserialization, and sending values and errors back to Nu for us. To start it up, we pass it something that implements the `Plugin` trait.
 
-Next, above main, is this implementation of the `Plugin` trait for our particular plugin.  Here, we'll implement the Plugin trait for our type, Len, which we'll see more of soon.  Let's take a look at how we implement this trait:
+Next, above main, is this implementation of the `Plugin` trait for our particular plugin. Here, we'll implement the Plugin trait for our type, Len, which we'll see more of soon. Let's take a look at how we implement this trait:
 
 ```rust
 impl Plugin for Len {
@@ -132,13 +132,13 @@ impl Plugin for Len {
 ```
 
 The two most important parts of this implementation are the `config` part, which is run by Nu when it first starts up. This tells Nu the basic information about the plugin: its name, the parameters it takes, the description, and what kind of plugin it is.
-Here, we tell Nu that the name is "len", give it a basic description for `help` to display and we are a filter plugin (rather than a sink plugin).
+Here, we tell Nu that the name is "len", give it a basic description for `help` to display and that we are a filter plugin (rather than a sink plugin).
 
-Next, in the `filter` implementation, we describe how to do work as values flow into this plugin.  Here, we receive one value (a `Value`) at a time.
+Next, in the `filter` implementation, we describe how to do work as values flow into this plugin. Here, we receive one value (a `Value`) at a time.
 We also return either a Vec of values or an error.
-Return a vec instead of a single value allows us to remove values, or add new ones, in addition to working with the single value coming in.
-  
-Because the `begin_filter` doesn't do anything, we can remove it.  This would make the above:
+Returning a Vec instead of a single value allows us to remove values, or add new ones, in addition to working with the single value coming in.
+
+Because `begin_filter` doesn't do anything, we can remove it. This would make the above:
 
 ```rust
 impl Plugin for Len {
@@ -179,7 +179,7 @@ impl Len {
                 tag: value.tag,
             }),
             _ => Err(ShellError::labeled_error(
-                "Unrecorgnized type in stream",
+                "Unrecognized type in stream",
                 "'len' given non-string info by this",
                 value.tag.span,
             )),
@@ -201,7 +201,7 @@ impl Len {
 }
 ```
 
-The first method is optional, it's just a convenient way to create a new value of the `Len` type.  The real work is done in the second method:
+The first method is optional, it's just a convenient way to create a new value of the `Len` type. The real work is done in the second method:
 
 ```rust
 impl Len {
@@ -214,7 +214,7 @@ impl Len {
                 tag: value.tag,
             }),
             _ => Err(ShellError::labeled_error(
-                "Unrecorgnized type in stream",
+                "Unrecognized type in stream",
                 "'len' given non-string info by this",
                 value.tag.span,
             )),
@@ -223,10 +223,10 @@ impl Len {
 }
 ```
 
-This method will act over each element in the pipeline as it flows into our plugin.  For our plugin, we really only care about strings so that we can return the length of them.
+This method will act over each element in the pipeline as it flows into our plugin. For our plugin, we really only care about strings so that we can return their length.
 
-We use Rust's pattern matching to check the type of the Value coming in, and then operate with it if it's a string.  The value is a Tagged<Value> so it carries with it where the value came from.  If the value isn't a string, we give an error and let the user know where the value came from that is causing the problem.  (Note, if we had wanted to also put an error underline under the command name, we could get the `name_span` from the CallInfo given to `begin_filter`)
-    
+We use Rust's pattern matching to check the type of the Value coming in, and then operate with it if it's a string. The value is a Tagged<Value> so it carries with it where the value came from. If the value isn't a string, we give an error and let the user know where the value came from that is causing the problem. (Note, if we had wanted to also put an error underline under the command name, we could get the `name_span` from the CallInfo given to `begin_filter`)
+
 Lastly, let's look at the top of the file:
 
 ```rust
@@ -245,8 +245,8 @@ Once we have finished our plugin, to use it all we need to do is install it.
 > cargo install --path .
 ```
 
-Once `nu` starts up, it will discover it and register it as a command.
-If you're already running `nu` during the installation process of your plugin, ensure you restart `nu` so it can load and register your plugin.
+Once `nu` starts up, it will discover the plugin and register it as a command.
+If you're already running `nu` during the installation process of your plugin, ensure you restart `nu` so that it can load and register your plugin.
 
 ```
 > nu
@@ -332,9 +332,9 @@ for line in fileinput.input():
         break
 ```
 
-For this plugin, we have to serve to basic roles: responding to a request for the plugin configuration and doing the actual filtering. This code acts as our main loop, responding to messages from Nu by doing some work and then returning a response. Each JSON message is sent to the plugin on a single line, so we need only to read the line and then parse the json it contains.
+For this plugin, we have to serve two basic roles: responding to a request for the plugin configuration, and doing the actual filtering. This code acts as our main loop, responding to messages from Nu by doing some work and then returning a response. Each JSON message is sent to the plugin on a single line, so we need only to read the line and then parse the json it contains.
 
-From there, we look at what method is being invoked. For this plugin, there are four methods we care about: config, begin_filter, filter, and end_filter.  When we're sent a 'config' request, we respond with the signature of this plugin, which is a bit of information to tell Nu how the command should be called. Once sent, we break out of the loop so the plugin can exit and be later called when filtering begins.
+From there, we look at what method is being invoked. For this plugin, there are four methods we care about: config, begin_filter, filter, and end_filter. When we're sent a 'config' request, we respond with the signature of this plugin, which is a bit of information to tell Nu how the command should be called. Once sent, we break out of the loop so that the plugin can exit and be later called when filtering begins.
 
 The other three methods -- begin_filter, filter, and end_filter -- all work together to do the work of filtering the data coming in. As this plugin will work 1-to-1 with each bit of data, turning strings into their string lengths, we do most of our work in the `filter` method. The 'end_filter' method here tells us it's time for the plugin to shut down, so we go ahead and break out of the loop.
 
@@ -347,7 +347,7 @@ def get_length(string_value):
     return int_value
 ```
 
-The work of filtering is doing by the `get_length` function. Here, we assume we're given strings (we could make this more robust in the future and return errors if we were not), and then we extract the string we're given. From there, we measure the length of the string and create a new `Int` value for that length.
+The work of filtering is done by the `get_length` function. Here, we assume we're given strings (we could make this more robust in the future and return errors otherwise), and then we extract the string we're given. From there, we measure the length of the string and create a new `Int` value for that length.
 
 Finally, we use the same item we were given and replace the payload with this new Int. We do this to reuse the metadata that was passed to us with the string, though this is an optional step. We could have instead opted to create new metadata and passed that out instead.
 
@@ -374,7 +374,7 @@ All of this takes a few imports to accomplish, so we make sure to include them.
 
 Finally, to make it easier to run our Python, we make this file executable (using something like `chmod +x nu_plugin_len`) and add the path to our python at the top. This trick works for Unix-based platforms, for Windows we would need to create an .exe or .bat file that would invoke the python code for us.
 
-We are using Python 3 because Python 2 will not be maintained past 2020. However script works accordingly with Python 2 and with Python 3.
+We are using Python 3 because Python 2 will not be maintained past 2020. However our script works accordingly with Python 2 and with Python 3.
 Just change the first line into: 
 
 ```python
