@@ -1,3 +1,7 @@
+# DEPRECATED
+
+Please use https://github.com/nushell/nushell.github.io instead
+
 # Nu Contributor Book
 
 You can view it live at [www.nushell.sh/contributor-book/](https://www.nushell.sh/contributor-book/)
