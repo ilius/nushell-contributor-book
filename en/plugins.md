@@ -17,16 +17,16 @@ The second stage is the actual doing of work. Here the plugins are sent either a
 
 ## Discovery
 
-Nu discovers plugins by checking all directories available in the current PATH.
+Nu discovers plugins by checking all directories specified as `plugin_dirs` in [config.toml](https://github.com/nushell/nushell/blob/main/docs/sample_config/config.toml) file (in `~/.config/nu/` on Linux)
 In each directory, Nu is looking for executable files that match the pattern `nu_plugin_*` where `*` is a minimum of one alphanumeric character.
 On Windows, this has a similar pattern of `nu_plugin_*.exe` or `nu_plugin_*.bat`.
 
 Once a matching file has been discovered, Nu will invoke the file and pass to it the first JSON-RPC command: config.
 Config replies with the signature of the plugin, which is identical to the signature commands use.
 
-Nu continues in this way until it has traveled across all directories in the path.
+Nu continues in this way until it has traveled across all directories in `plugin_dirs`.
 
-After it has traversed the path, it will look in two more directories: the target/debug and the target/release directories. It will pick one or the other depending whether Nu was compiled in debug mode or release mode, respectively. This allows for easier testing of plugins during development.
+After it has traversed `plugin_dirs`, it will look in two more directories: the target/debug and the target/release directories. It will pick one or the other depending whether Nu was compiled in debug mode or release mode, respectively. This allows for easier testing of plugins during development.
 
 ## Creating a plugin (in Rust)
 
