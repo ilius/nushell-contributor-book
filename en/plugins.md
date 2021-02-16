@@ -281,12 +281,15 @@ def print_good_response(response):
     sys.stdout.flush()
 
 
-def get_length(string_value):
-    string_len = len(string_value["item"]["Primitive"]["String"])
-    int_item = {"Primitive": {"Int": string_len}}
-    int_value = string_value
-    int_value["item"] = int_item
-    return int_value
+def get_length(arg):
+    tag = arg["tag"]
+    int_value = {"Primitive": {
+        "Int": str(len(arg["value"]["Primitive"]["String"]))
+    }}
+    return {
+        "tag": tag,
+        "value": int_value,
+    }
 
 
 for line in fileinput.input():
@@ -339,12 +342,15 @@ From there, we look at what method is being invoked. For this plugin, there are 
 The other three methods -- begin_filter, filter, and end_filter -- all work together to do the work of filtering the data coming in. As this plugin will work 1-to-1 with each bit of data, turning strings into their string lengths, we do most of our work in the `filter` method. The 'end_filter' method here tells us it's time for the plugin to shut down, so we go ahead and break out of the loop.
 
 ```python
-def get_length(string_value):
-    string_len = len(string_value["item"]["Primitive"]["String"])
-    int_item = {"Primitive": {"Int": string_len}}
-    int_value = string_value
-    int_value["item"] = int_item
-    return int_value
+def get_length(arg):
+    tag = arg["tag"]
+    int_value = {"Primitive": {
+        "Int": str(len(arg["value"]["Primitive"]["String"]))
+    }}
+    return {
+        "tag": tag,
+        "value": int_value,
+    }
 ```
 
 The work of filtering is done by the `get_length` function. Here, we assume we're given strings (we could make this more robust in the future and return errors otherwise), and then we extract the string we're given. From there, we measure the length of the string and create a new `Int` value for that length.
